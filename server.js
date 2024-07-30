@@ -53,8 +53,8 @@ app.use('/comentarios', comentariosRoutes);
 app.use('/products',productosMLRoutes); //aqui esta
 app.use('/categoriasML', categoriasML);
 
-router.get("/", (req, res, next) => {
-  res.json("API FUNCIONANDO CORRECTAMENTE");
+app.get("/", (req, res, next) => {
+  res.status(200).json("API FUNCIONANDO CORRECTAMENTE");
 });
 app.listen(port, () => {
   console.log(`Servidor Express en ejecución en http://localhost:${port}`);
