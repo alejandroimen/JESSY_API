@@ -118,8 +118,3 @@ uploads/files/**
 !/uploads/**/.gitkeep
 !/templates/**/.gitkeep
 !/services/**/.gitkeep
-
-#templates
-templates/xochilt
-modules/correos/carpetas
-create/xlsx
