@@ -17,9 +17,23 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.DB_PORT || 3000;
+// Lista de orígenes permitidos
+const allowedOrigins = [
+  'http://localhost:5173',  // URL del entorno local
+  'https://jessy.integrador.xyz'  // URL del entorno de producción
+];
 
 app.use(cors({
-  origin: 'http://localhost:5173', // Permite solicitudes desde esta URL
+  origin: 
+  (origin, callback) => {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        // Permitir el origen
+        callback(null, true);
+    } else {
+        // Rechazar el origen
+        callback(new Error('Not allowed by CORS'));
+    }
+},
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Permite estos métodos
   credentials: true // Si necesitas enviar cookies o autenticación HTTP
 })); 
