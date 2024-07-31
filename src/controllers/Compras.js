@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const { getTokens } = require('../tokens');
 require('dotenv').config();
 
 const db = mysql.createConnection({
@@ -30,6 +31,11 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
+const getAccessToken = async () => {
+  const tokens = await getTokens();
+  return tokens.access_token;
+};
+
 // Obtener todas las compras
 exports.getAllCompras = (req, res) => {
   db.query('SELECT * FROM Compras', (err, result) => {
@@ -44,15 +50,25 @@ exports.getAllCompras = (req, res) => {
 // Agregar una nueva compra
 exports.addCompra = [authenticateJWT, (req, res) => {
   const { invertido, id_proveedores, cantidad_Productos, idProducto, fechaCompra } = req.body;
+  //console.log('req.body: ', req.body)
 
   db.query('INSERT INTO Compras SET ?', { invertido, id_proveedores, cantidad_Productos, idProducto, fechaCompra }, (err, result) => {
     if (err) {
       res.status(500).send('Error al agregar la compra');
       return;
     }
-    console.log("id del producto:", idProducto)
+    
+    db.query('SELECT available_quantity FROM Producto WHERE id_producto = ?', [idProducto], (err, productResult) => {
+      if (err) {
+        res.status(500).send('Error al obtener el available_quantity del producto');
+        return;
+      }
+  
+      const currentAvailableQuantity = productResult[0].available_quantity;
+      const cantidad_Productos1 = currentAvailableQuantity + cantidad_Productos;
+      
     // Actualizar el stock en la base de datos
-    db.query('UPDATE Producto SET stock = stock + ? WHERE id_producto = ?', [cantidad_Productos, idProducto], (err) => {
+    db.query('UPDATE Producto SET available_quantity = available_quantity + ? WHERE id_producto = ?', [cantidad_Productos1, idProducto], (err) => {
       if (err) {
         res.status(500).send('Error al actualizar el stock en la base de datos');
         return;
@@ -66,12 +82,15 @@ exports.addCompra = [authenticateJWT, (req, res) => {
         }
 
         const id_ML = results[0].id_ML;
-        
-        try {
+         console.log('id_ML:', id_ML)
+         console.log('cantidad productos', cantidad_Productos);
+         const accessToken = await getAccessToken();
+         console.log('Token:', accessToken);
+       try {
           // Actualizar el stock en Mercado Libre
-          const accessToken = process.env.MERCADO_LIBRE_ACCESS_TOKEN; // Asegúrate de que el token esté configurado en tu archivo .env
-          await axios.put(`https://api.mercadolibre.com/items/${id_ML}`, {
-            available_quantity: cantidad_Productos
+          console.log('Hola mundo')
+          const respuestaML = await axios.put(`https://api.mercadolibre.com/items/${id_ML}`, { //
+            available_quantity: cantidad_Productos1
           }, {
             headers: {
               'Authorization': `Bearer ${accessToken}`,
@@ -79,14 +98,19 @@ exports.addCompra = [authenticateJWT, (req, res) => {
               'Accept': 'application/json'
             }
           });
-
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          console.log('respuesta', respuestaML.res); //
           res.status(201).send('Compra agregada y stock actualizado correctamente');
         } catch (error) {
+          console.log(error);
+          console.log(error.response ? error.response.data : error.message);
+
           res.status(500).send('Error al actualizar el stock en Mercado Libre');
-        }
+        } 
       });
     });
   });
+});
 }];
 
 // Actualizar una compra existente

@@ -45,14 +45,13 @@ const getAccessToken = async () => {
 };
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '..', 'uploads'));
     },
-    filename: function (req, file, cb) {
+    filename: (req, file, cb) => {
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
-
 const upload = multer({ storage: storage });
 
 const createProduct = async (req, res) => {
@@ -65,33 +64,220 @@ const createProduct = async (req, res) => {
       console.log('Esto es lo que llega', req.file) //body
       const imageUrl = `http://localhost:3000/uploads/${req.body.file.filename}`;
       console.log('URL de la imagen:', imageUrl);
-  
-      const mlProduct = {
-        title: req.body.title,
-        description: req.body.description,
-        currency_id: "MXN",
-        price: req.body.price,
-        available_quantity: req.body.available_quantity,
-        condition: "new",
-        category_id: req.body.category_id,
-        listing_type_id: "gold_special",
-        pictures: [{ source: imageUrl }],
-        attributes: [
-          {
-            "id": "BRAND",
-            "value_id": "34567",
-            "value_name": "HP"
-          },
-          {
-            "id": "COLOR",
-            "value_name": "Negro"
-          },
-          {
-            "id": "MODEL",
-            "value_name": "XYZ-123"
-          }
-        ]
-      };
+      const category= req.body.category_id;
+      let mlProduct={};
+      const categoryId = String(req.body.category_id);
+      console.log('category_id (string):', categoryId);
+      switch (categoryId) {
+        case "MLM1652":
+            mlProduct = {
+                title: req.body.title,
+                description: req.body.description,
+                currency_id: "MXN",
+                price: req.body.price,
+                available_quantity: req.body.available_quantity,
+                condition: "new",
+                category_id: categoryId,
+                listing_type_id: "gold_special",
+                pictures: [{ source: 'https://http2.mlstatic.com/D_NQ_NP_631465-MLM77868453048_072024-F.jpg' }],
+                attributes: [
+                  {
+                    "id": "BRAND",
+                    "value_id": "34567",
+                    "value_name": "HP"
+                  },
+                  {
+                    "id": "COLOR",
+                    "value_name": "Negro"
+                  },
+                  {
+                    "id": "MODEL",
+                    "value_name": "XYZ-123"
+                  },
+                  {
+                    "id": "PROCESSOR_BRAND",
+                    "value_name": "Intel core i7" 
+                  },
+                  {
+                    "id": "PROCESSOR_LINE",
+                    "value_name": "intel" 
+                  },
+                  {
+                    "id": "PROCESSOR_MODEL",
+                    "value_name": "core i7" 
+                  }
+                ]
+              };
+            break;
+        case "MLM1656":
+            mlProduct = {
+                title: req.body.title,
+                description: req.body.description,
+                currency_id: "MXN",
+                price: req.body.price,
+                available_quantity: req.body.available_quantity,
+                condition: "new",
+                category_id: categoryId,
+                listing_type_id: "gold_special",
+                pictures: [{ source: 'https://http2.mlstatic.com/D_NQ_NP_688809-MLM78091096891_072024-F.jpg' }],
+                attributes: [
+                    {
+                        "id": "BRAND",
+                        "value_name": "Marca"
+                    },
+                    {
+                        "id": "MODEL",
+                        "value_name": "Modelo"
+                    },
+                    {
+                        "id": "DISPLAY_SIZE",
+                        "value_name": "45 pulgadas"
+                    }
+                ],
+                "shipping": {
+                    "mode": "me2",
+                    "local_pick_up": false,
+                    "free_shipping": true,
+                    "dimensions": null
+                }
+                
+            };
+            break;
+        case "MLM1002":
+            mlProduct = {
+                title: req.body.title,
+                description: req.body.description,
+                currency_id: "MXN",
+                price: req.body.price,
+                available_quantity: req.body.available_quantity,
+                condition: "new",
+                category_id: categoryId,
+                listing_type_id: "gold_special",
+                pictures: [{ source: 'https://http2.mlstatic.com/D_NQ_NP_790290-MLM77868508818_072024-F.jpg' }],
+                attributes: [
+                    {
+                        "id": "BRAND",
+                        "value_name": "samsung"
+                    },
+                    {
+                        "id": "MODEL",
+                        "value_name": "Smart TV"
+                    },
+                    {
+                        "id": "DISPLAY_SIZE",
+                        "value_name": "42 pulgadas"
+                      },
+
+                    {
+                        "id": "GTIN",
+                        "value_name": "0123456789012"
+                     }
+                    ],
+                    "shipping": {
+                      "mode": "me2",
+                      "local_pick_up": false,
+                      "free_shipping": true,
+                      "dimensions": null
+                    }
+                
+            };
+                        break;
+        case "MLM1055":
+            mlProduct = {
+                title: req.body.title,
+                description: req.body.description,
+                currency_id: "MXN",
+                price: req.body.price,
+                available_quantity: req.body.available_quantity,
+                condition: "new",
+                category_id: categoryId,
+                listing_type_id: "gold_special",
+                pictures: [{ source: 'https://mla-s1-p.mlstatic.com/720289-MLM77772999628_072024-I.jpg' }],
+                attributes: [
+                    {
+                      "id": "MEMORY_RAM",
+                      "value_name": "8 GB"
+                    },
+                    {
+                      "id": "COLOR",
+                      "value_name": "Espacial"
+                    },
+                    {
+                      "id": "IS_DUAL_SIM",
+                      "value_name": "Sí"
+                    },
+                    {
+                      "id": "CARRIER",
+                      "value_name": "Cualquier cosa para que agarre"
+                    },
+                    {
+                      "id": "INTERNAL_MEMORY",
+                      "value_name": "1 TB"
+                    },
+                    { 
+                    "id": "MODEL",
+                    "value_name": "iPhone 14"
+                    },
+                    {
+                        "id": "BRAND",
+                        "value_id": "34567",
+                        "value_name": "iPhone"
+                      }
+                  ],
+                  "shipping": {
+                    "mode": "me2",
+                    "local_pick_up": false,
+                    "free_shipping": true,
+                    "dimensions": null
+                  }
+            };
+                        break;
+        case "MLM188963":
+            mlProduct = {
+                title: req.body.title,
+                description: req.body.description,
+                currency_id: "MXN",
+                price: req.body.price,
+                available_quantity: req.body.available_quantity,
+                condition: "new",
+                category_id: categoryId,
+                listing_type_id: "gold_special",
+                pictures: [{ source: imageUrl }],
+                attributes: [
+                    {
+                        "id": "BRAND",
+                        "value_name": "Marca"
+                    },
+                    {
+                        "id": "MODEL",
+                        "value_name": "Modelo"
+                    }
+                ]
+            };
+            break;
+        default:
+            mlProduct = {
+                title: req.body.title,
+                description: req.body.description,
+                currency_id: "MXN",
+                price: req.body.price,
+                available_quantity: req.body.available_quantity,
+                condition: "new",
+                category_id: categoryId,
+                listing_type_id: "gold_special",
+                pictures: [{ source: imageUrl }],
+                attributes: [
+                    {
+                        "id": "BRAND",
+                        "value_name": "Marca"
+                    },
+                    {
+                        "id": "MODEL",
+                        "value_name": "Modelo"
+                    }
+                ]
+            };    }
+      
   
       console.log('Intentando crear producto en Mercado Libre...');
       const response = await axios.post('https://api.mercadolibre.com/items', mlProduct, {
@@ -180,9 +366,9 @@ const updateProduct = async (req, res) => {
             price: req.body.price,
             available_quantity: req.body.available_quantity,
             category_id: req.body.category_id,
-            pictures: [{ source: imageUrl }]
+            pictures: [{ source: 'https://http2.mlstatic.com/D_NQ_NP_941703-MLM78090438025_072024-F.jpg' }]
         };
-
+/*
         const mlResponse = await axios.put(`https://api.mercadolibre.com/items/${req.params.id_ML}`, mlProduct, {
             headers: {
                 Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -190,14 +376,13 @@ const updateProduct = async (req, res) => {
                 "Accept": "application/json"
             }
         });
-
+*/
         const dbProduct = {
             title: req.body.title,
             description: req.body.description,
             price: req.body.price,
             available_quantity: req.body.available_quantity,
-            category_id: req.body.category_id,
-            image: req.body.file ? req.body.file : req.body.imageUrl
+            category_id: req.body.category_id
         };
 
         db.query('UPDATE Producto SET ? WHERE id_ML = ?', [dbProduct, req.params.id], (err, result) => {
@@ -208,8 +393,8 @@ const updateProduct = async (req, res) => {
                 return res.status(404).json({ message: 'Producto no encontrado en la base de datos' });
             }
             res.json({
-                message: 'Producto actualizado en ML y BD correctamente',
-                mlData: mlResponse.data,
+                message: 'Producto actualizado en BD correctamente',
+              //  mlData: mlResponse.data,
                 dbData: dbProduct
             });
         });
